@@ -3,7 +3,7 @@ from PIL import Image
 import logging
 import numpy as np
 
-GAP_SIZE = "2px"
+GAP_SIZE = "1px"
 
 
 def _styled_image(image: Image.Image, hidden: bool = False, event_handler_fn=None) -> rx.Component:

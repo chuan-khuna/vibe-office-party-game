@@ -24,6 +24,7 @@ def upload_input(state: rx.State) -> rx.Component:
             rx.hover_card.trigger(rx.text("uploaded file path")),
             rx.hover_card.content(
                 rx.text(rx.selected_files("upload1")),
+                side="top",
             ),
         ),
         rx.hstack(
