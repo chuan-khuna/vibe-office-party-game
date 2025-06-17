@@ -4,6 +4,7 @@ from PIL import Image
 from office_game_app.components.whats_behind.image_grid import image_grid_component
 from office_game_app.components.whats_behind.cell_config import cell_config_input
 import logging
+import io
 
 
 place_holder_image_path = 'assets/lucy.png'
@@ -45,15 +46,20 @@ class CellState(rx.State):
                 self.cells[key] = True
                 logging.info(f"Reset cell {key} to hidden.")
 
+    @rx.event
+    async def handle_upload(self, files: list[rx.UploadFile]):
+        first_file = files[0]
+        upload_data = await first_file.read()
+        self.image = Image.open(io.BytesIO(upload_data))
+        self.image = self.image.convert("RGB")  # Ensure the image is in RGB format
+
     @rx.var(cache=True)
     def image_grid(self) -> list[list[Image.Image]]:
         image_grid = []
 
         image = self.image.convert("RGB")
         max_size = (1080, 1080)
-
         image.thumbnail(max_size)
-        print(f"image size: {image.size}, rows: {self.num_rows}, cols: {self.num_cols}")
 
         cell_width = image.width // self.num_cols
         cell_height = image.height // self.num_rows
@@ -68,6 +74,15 @@ class CellState(rx.State):
                 row_cells.append(cell_image)
             image_grid.append(row_cells)
         return image_grid
+
+    @rx.event
+    def reset_game_to_default(self):
+        # Reset the game state to default values
+        self.num_rows = default_num_rows
+        self.num_cols = default_num_cols
+        self.cells = {f"{row}_{col}": True for row in range(default_num_rows) for col in range(default_num_cols)}
+        self.image = Image.open(place_holder_image_path)
+        logging.info("Game state reset to default values.")
 
 
 def whats_behind() -> rx.Component:
