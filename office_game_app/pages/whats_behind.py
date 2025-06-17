@@ -10,4 +10,4 @@ def whats_behind() -> rx.Component:
     # what's behind game
     image = Image.open(place_holder_image_path)
 
-    return rx.container(rx.vstack(rx.text("What's Behind Game"), image_grid(image, 3, 3)))
+    return rx.container(rx.vstack(rx.text("What's Behind Game"), image_grid(image, 5, 5)))

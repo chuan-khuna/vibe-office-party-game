@@ -5,9 +5,20 @@ import logging
 GAP_SIZE = "2px"
 
 
+def wrap_image(image: Image.Image, hidden: bool = False) -> rx.Component:
+    # if hidden display it with grayscale
+    if hidden:
+        return rx.image(src=image, style={"filter": "grayscale(100%)", "opacity": "1.0"})
+    return rx.image(src=image)
+
+
 def image_grid(image: Image.Image, num_rows: int, num_cols: int) -> rx.Component:
     # divide image into grid cells
     logging.info(f"image size: {image.size}, rows: {num_rows}, cols: {num_cols}")
+
+    # resize image to have max width and height
+    max_size = (800, 800)
+    image.thumbnail(max_size)
 
     cell_width = image.width // num_cols
     cell_height = image.height // num_rows
@@ -28,7 +39,9 @@ def image_grid(image: Image.Image, num_rows: int, num_cols: int) -> rx.Component
         rx.text(f"Image Grid: {num_rows} rows, {num_cols} cols"),
         rx.vstack(
             *[
-                rx.hstack(*[rx.image(src=cell_image) for cell_image in row_cells], style={"gap": GAP_SIZE})
+                rx.hstack(
+                    *[wrap_image(image=cell_image, hidden=True) for cell_image in row_cells], style={"gap": GAP_SIZE}
+                )
                 for row_cells in image_grid
             ],
             style={"gap": GAP_SIZE},
