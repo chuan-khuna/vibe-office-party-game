@@ -75,6 +75,14 @@ class CellState(rx.State):
             image_grid.append(row_cells)
         return image_grid
 
+    @rx.var
+    def cell_width(self) -> int:
+        return self.image.width // self.num_cols if self.image else 0
+
+    @rx.var
+    def cell_height(self) -> int:
+        return self.image.height // self.num_rows if self.image else 0
+
     @rx.event
     def reset_game_to_default(self):
         # Reset the game state to default values
