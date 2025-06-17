@@ -27,5 +27,13 @@ def index() -> rx.Component:
             justify="center",
             min_height="85vh",
         ),
+        rx.link(
+            rx.button("What's Behind?"),
+            href="/whats_behind",
+            color_scheme="blue",
+            width="200px",
+            margin_top="2em",
+            margin_bottom="2em",
+        ),
         rx.logo(),
     )

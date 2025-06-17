@@ -10,6 +10,7 @@ import io
 place_holder_image_path = 'assets/lucy.png'
 default_num_rows = 3
 default_num_cols = 3
+MAX_SIZE = (1080, 1080)
 
 
 class CellState(rx.State):
@@ -52,14 +53,13 @@ class CellState(rx.State):
         upload_data = await first_file.read()
         self.image = Image.open(io.BytesIO(upload_data))
         self.image = self.image.convert("RGB")  # Ensure the image is in RGB format
+        self.image.thumbnail(MAX_SIZE)  # Resize the image to fit within 1080x1080
 
     @rx.var(cache=True)
     def image_grid(self) -> list[list[Image.Image]]:
         image_grid = []
 
-        image = self.image.convert("RGB")
-        max_size = (1080, 1080)
-        image.thumbnail(max_size)
+        image = self.image
 
         cell_width = image.width // self.num_cols
         cell_height = image.height // self.num_rows
@@ -104,6 +104,4 @@ class CellState(rx.State):
 
 
 def whats_behind() -> rx.Component:
-    return rx.container(
-        rx.vstack(rx.text("What's Behind Game"), cell_config_input(CellState), image_grid_component(CellState))
-    )
+    return rx.container(cell_config_input(CellState), image_grid_component(CellState))
