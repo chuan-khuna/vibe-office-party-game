@@ -6,7 +6,7 @@ import numpy as np
 GAP_SIZE = "2px"
 
 
-def _styled_image(image: Image.Image, hidden: bool = False, on_click=None) -> rx.Component:
+def _styled_image(image: Image.Image, hidden: bool = False, event_handler_fn=None) -> rx.Component:
     style = {"width": "100%", "height": "100%", "cursor": "pointer"}
     if hidden:
         # hidden effect
@@ -16,15 +16,15 @@ def _styled_image(image: Image.Image, hidden: bool = False, on_click=None) -> rx
         arr = np.zeros_like(np.array(image))
         image = Image.fromarray(arr)
 
-    return rx.image(src=image, style=style, on_click=on_click)
+    return rx.image(src=image, style=style, on_click=event_handler_fn)
 
 
 def wrap_image(image: Image.Image, row_index: int, col_index: int, state: rx.State) -> rx.Component:
     hidden = state.cells[f"{row_index}_{col_index}"]
     return rx.cond(
         hidden,
-        _styled_image(image, hidden=True, on_click=state.toggle_hidden(row=row_index, col=col_index)),
-        _styled_image(image, hidden=False, on_click=state.toggle_hidden(row=row_index, col=col_index)),
+        _styled_image(image, hidden=True, event_handler_fn=state.toggle_hidden(row=row_index, col=col_index)),
+        _styled_image(image, hidden=False, event_handler_fn=state.toggle_hidden(row=row_index, col=col_index)),
     )
 
 
