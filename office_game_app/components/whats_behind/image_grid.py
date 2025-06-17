@@ -28,7 +28,7 @@ def wrap_image(image: Image.Image, row_index: int, col_index: int, state: rx.Sta
     )
 
 
-def image_grid(image: Image.Image, num_rows: int, num_cols: int, state: rx.State) -> rx.Component:
+def show_image_grid(image: Image.Image, num_rows: int, num_cols: int, state: rx.State) -> rx.Component:
     # divide image into grid cells
     logging.info(f"image size: {image.size}, rows: {num_rows}, cols: {num_cols}")
 
@@ -65,6 +65,27 @@ def image_grid(image: Image.Image, num_rows: int, num_cols: int, state: rx.State
                 )
                 for row_index, row_cells in enumerate(image_grid)
             ],
+            style={"gap": GAP_SIZE},
+        ),
+    )
+
+
+def show_image_grid_2(state: rx.State) -> rx.Component:
+    return rx.vstack(
+        rx.text(f"Image Grid: {state.num_rows} rows, {state.num_cols} cols"),
+        rx.vstack(
+            rx.foreach(
+                state.image_grid,
+                lambda row_cells, row_index: rx.hstack(
+                    rx.foreach(
+                        row_cells,
+                        lambda cell_image, col_index: rx.image(
+                            src=cell_image,
+                        ),
+                    ),
+                    style={"gap": GAP_SIZE},
+                ),
+            ),
             style={"gap": GAP_SIZE},
         ),
     )

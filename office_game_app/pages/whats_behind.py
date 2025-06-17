@@ -1,7 +1,7 @@
 import reflex as rx
 from PIL import Image
 
-from office_game_app.components.whats_behind.image_grid import image_grid
+from office_game_app.components.whats_behind.image_grid import show_image_grid, show_image_grid_2
 from office_game_app.components.whats_behind.cell_config import cell_config_input
 import logging
 
@@ -17,6 +17,7 @@ class CellState(rx.State):
     cells: dict[str, bool] = {
         f"{row}_{col}": True for row in range(default_num_rows) for col in range(default_num_cols)
     }
+    image: Image.Image = Image.open(place_holder_image_path)
 
     @rx.event
     def toggle_hidden(self, row: int, col: int):
@@ -44,6 +45,34 @@ class CellState(rx.State):
                 self.cells[key] = True
                 logging.info(f"Reset cell {key} to hidden.")
 
+    @rx.var
+    def wtf(self) -> int:
+        return self.num_cols + 1
+
+    @rx.var(cache=True)
+    def image_grid(self) -> list[list[Image.Image]]:
+        image_grid = []
+
+        image = self.image.convert("RGB")
+        max_size = (500, 500)
+
+        image.thumbnail(max_size)
+        print(f"image size: {image.size}, rows: {self.num_rows}, cols: {self.num_cols}")
+
+        cell_width = image.width // self.num_cols
+        cell_height = image.height // self.num_rows
+        for row in range(self.num_rows):
+            row_cells = []
+            for col in range(self.num_cols):
+                left = col * cell_width
+                upper = row * cell_height
+                right = left + cell_width
+                lower = upper + cell_height
+                cell_image = image.crop((left, upper, right, lower))
+                row_cells.append(cell_image)
+            image_grid.append(row_cells)
+        return image_grid
+
 
 def whats_behind() -> rx.Component:
     # what's behind game
@@ -53,6 +82,8 @@ def whats_behind() -> rx.Component:
         rx.vstack(
             rx.text("What's Behind Game"),
             cell_config_input(CellState),
-            image_grid(image, num_rows=default_num_rows, num_cols=default_num_cols, state=CellState),
+            # show_image_grid(image, num_rows=default_num_rows, num_cols=default_num_cols, state=CellState),
+            show_image_grid_2(CellState),
+            rx.text("wtf", CellState.wtf),
         )
     )
