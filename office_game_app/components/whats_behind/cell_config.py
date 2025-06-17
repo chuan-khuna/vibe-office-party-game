@@ -53,9 +53,9 @@ def cell_config_input(state: rx.State) -> rx.Component:
                     rx.text("Number of Columns"),
                     rx.slider(min=3, max=10, value=[state.num_cols], on_change=state.set_num_cols, width="200px"),
                 ),
-                rx.button("Reset Image", on_click=state.reset_cell, width="200px"),
+                rx.button("Reset State", on_click=state.reset_cell, width="200px"),
                 rx.button(
-                    "Reset Game",
+                    "Reset Game to Default",
                     on_click=state.reset_game_to_default,
                     width="200px",
                     color_scheme="red",
