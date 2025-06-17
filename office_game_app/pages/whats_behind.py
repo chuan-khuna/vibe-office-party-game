@@ -104,4 +104,4 @@ class CellState(rx.State):
 
 
 def whats_behind() -> rx.Component:
-    return rx.container(cell_config_input(CellState), image_grid_component(CellState))
+    return rx.container(rx.vstack(cell_config_input(CellState), image_grid_component(CellState)))
