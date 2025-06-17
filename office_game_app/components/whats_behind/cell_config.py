@@ -47,11 +47,11 @@ def cell_config_input(state: rx.State) -> rx.Component:
                 rx.heading(f"{state.num_cols} x {state.num_rows}"),
                 rx.vstack(
                     rx.text("Number of Rows"),
-                    rx.slider(min=3, max=10, value=[state.num_rows], on_change=state.set_num_rows, width="200px"),
+                    rx.slider(min=3, max=10, value=[state.num_rows], on_change=state.set_num_rows.throttle(20), width="200px"),
                 ),
                 rx.vstack(
                     rx.text("Number of Columns"),
-                    rx.slider(min=3, max=10, value=[state.num_cols], on_change=state.set_num_cols, width="200px"),
+                    rx.slider(min=3, max=10, value=[state.num_cols], on_change=state.set_num_cols.throttle(20), width="200px"),
                 ),
                 rx.button("Reset State", on_click=state.reset_cell, width="200px"),
                 rx.button(

@@ -18,7 +18,7 @@ def _styled_image(image: Image.Image, hidden: bool = False, event_handler_fn=Non
                         "font-family": "monospace",
                         "position": "absolute",
                         "color": "white",
-                        "font-size": "16pt",
+                        "font-size": "12pt",
                         "z-index": "1",
                         "top": "50%",
                         "left": "50%",
@@ -51,7 +51,7 @@ def wrap_image(image: Image.Image, row_index: int, col_index: int, state: rx.Sta
             image,
             hidden=True,
             event_handler_fn=state.toggle_hidden(row=row_index, col=col_index),
-            text=f"{row_index + 1}, {col_index + 1}",
+            text=f"{row_index + 1},{col_index + 1}",
         ),
         _styled_image(image, hidden=False, event_handler_fn=state.toggle_hidden(row=row_index, col=col_index)),
     )
