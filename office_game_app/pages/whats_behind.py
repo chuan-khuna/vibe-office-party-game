@@ -84,6 +84,16 @@ class CellState(rx.State):
         self.image = Image.open(place_holder_image_path)
         logging.info("Game state reset to default values.")
 
+    @rx.event
+    def show_all(self):
+        for k, v in self.cells.items():
+            self.cells[k] = False
+
+    @rx.event
+    def hide_all(self):
+        for k, v in self.cells.items():
+            self.cells[k] = True
+
 
 def whats_behind() -> rx.Component:
     return rx.container(

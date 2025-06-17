@@ -60,6 +60,20 @@ def cell_config_input(state: rx.State) -> rx.Component:
                     width="200px",
                     color_scheme="red",
                 ),
+                rx.hstack(
+                    rx.button(
+                        "Show all",
+                        on_click=state.show_all,
+                        width="80px",
+                        color_scheme="gray",
+                    ),
+                    rx.button(
+                        "Hide all",
+                        on_click=state.hide_all,
+                        width="80px",
+                        color_scheme="gray",
+                    ),
+                ),
             ),
             upload_input(state),
             style={"gap": "2em", "align-items": "center"},

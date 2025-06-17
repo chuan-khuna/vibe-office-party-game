@@ -25,7 +25,6 @@ def wrap_image(image: Image.Image, row_index: int, col_index: int, state: rx.Sta
 
 def image_grid_component(state: rx.State) -> rx.Component:
     return rx.vstack(
-        rx.text(f"Image Grid: {state.num_rows} rows, {state.num_cols} cols"),
         rx.vstack(
             rx.foreach(
                 state.image_grid,
