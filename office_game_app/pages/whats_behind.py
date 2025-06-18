@@ -32,11 +32,13 @@ class CellState(rx.State):
     def set_num_rows(self, value: list[int | float]):
         # set the number of rows
         self.num_rows = value[0]
+        self.reset_cell()
 
     @rx.event
     def set_num_cols(self, value: list[int | float]):
         # set the number of columns
         self.num_cols = value[0]
+        self.reset_cell()
 
     @rx.event
     def reset_cell(self):

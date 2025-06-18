@@ -58,7 +58,7 @@ def cell_config_input(state: rx.State) -> rx.Component:
                         min=3, max=10, value=[state.num_cols], on_change=state.set_num_cols.throttle(20), width="200px"
                     ),
                 ),
-                rx.button("Reset State", on_click=state.reset_cell, width="200px", color_scheme="cyan"),
+                # rx.button("Reset State", on_click=state.reset_cell, width="200px", color_scheme="cyan"),
                 rx.button(
                     "Reset Game to Default",
                     on_click=state.reset_game_to_default,
