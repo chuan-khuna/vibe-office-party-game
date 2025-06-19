@@ -3,7 +3,7 @@ from PIL import Image
 import logging
 import io
 
-from office_game_app.components.whats_behind.cell_config import upload_input
+from office_game_app.components.whats_behind.cell_config import upload_input, cell_config_input
 
 DEFAULT_NUM_ROWS = 10
 DEFAULT_NUM_COLS = 10
@@ -60,6 +60,15 @@ class GameState(rx.State):
                 logging.info(f"Reset cell {key} to hidden.")
 
     @rx.event
+    def reset_game_to_default(self):
+        # Reset the game state to default values
+        self.num_rows = DEFAULT_NUM_ROWS
+        self.num_cols = DEFAULT_NUM_COLS
+        self.game_state = {f"{row}_{col}": True for row in range(DEFAULT_NUM_ROWS) for col in range(DEFAULT_NUM_COLS)}
+        self.image = Image.open(place_holder_image_path)
+        logging.info("Game state reset to default values.")
+
+    @rx.event
     async def handle_upload(self, files: list[rx.UploadFile]):
         first_file = files[0]
         upload_data = await first_file.read()
@@ -78,9 +87,9 @@ class GameState(rx.State):
 
 def get_grid_bg(hidden: rx.State) -> str:
     if hidden:
-        return "rgba(0, 0, 255, 0.8)"
+        return "rgba(0, 0, 0, 1.0)"
     else:
-        return "rgba(164, 224, 174, 0.4)"
+        return "rgba(0, 0, 0, 0.0)"
 
 
 def whats_behind_2():
@@ -145,4 +154,4 @@ def whats_behind_2():
         overflow="hidden",
     )
 
-    return rx.container(rx.vstack(upload_input(GameState), grid_dynamic))
+    return rx.container(rx.vstack(cell_config_input(GameState), grid_dynamic))
