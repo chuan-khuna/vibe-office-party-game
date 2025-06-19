@@ -3,6 +3,8 @@ from PIL import Image
 import logging
 import io
 
+from office_game_app.components.whats_behind.cell_config import upload_input
+
 DEFAULT_NUM_ROWS = 10
 DEFAULT_NUM_COLS = 10
 place_holder_image_path = 'assets/lucy.png'
@@ -65,6 +67,14 @@ class GameState(rx.State):
         self.image = self.image.convert("RGB")  # Ensure the image is in RGB format
         self.image.thumbnail(MAX_SIZE)  # Resize the image to fit within 1080x1080
 
+    @rx.var
+    def image_width(self) -> int:
+        return self.image.width if self.image else 0
+
+    @rx.var
+    def image_height(self) -> int:
+        return self.image.height if self.image else 0
+
 
 def get_grid_bg(hidden: rx.State) -> str:
     if hidden:
@@ -74,7 +84,7 @@ def get_grid_bg(hidden: rx.State) -> str:
 
 
 def whats_behind_2():
-    grid = rx.box(
+    grid_dynamic = rx.box(
         # Background image
         rx.image(
             src=GameState.image,
@@ -86,7 +96,7 @@ def whats_behind_2():
             left="0",
             z_index="1",
         ),
-        # Grid overlay using CSS Grid
+        # Grid overlay
         rx.box(
             rx.foreach(
                 rx.Var.range(GameState.num_rows * GameState.num_cols),
@@ -126,8 +136,13 @@ def whats_behind_2():
         ),
         position="relative",
         width="100%",
-        aspect_ratio="16/9",  # Adjust based on your image aspect ratio
+        # Dynamic aspect ratio calculation
+        aspect_ratio=rx.cond(
+            GameState.image_width > 0,
+            f"{GameState.image_width} / {GameState.image_height}",
+            "16 / 9",  # Fallback
+        ),
         overflow="hidden",
     )
 
-    return rx.container(rx.vstack(grid))
+    return rx.container(rx.vstack(upload_input(GameState), grid_dynamic))
