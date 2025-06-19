@@ -29,7 +29,8 @@ def dynamic_grid(state: rx.State) -> rx.Component:
                     rx.cond(
                         state.game_state[f"{index // state.num_cols}_{index % state.num_cols}"],
                         rx.text(
-                            f"{(index // state.num_cols) + 1}, {(index % state.num_cols) + 1}",
+                            f"{(index // state.num_cols) + 1},{(index % state.num_cols) + 1}",
+                            font_family="monospace",
                             font_size="clamp(8px, 1.5vw, 14px)",
                             color="white",
                             text_align="center",

@@ -5,7 +5,7 @@ import io
 
 from office_game_app.components.whats_behind.cell_config import upload_input, cell_config_input
 
-from office_game_app.components.dynamic_grid import dynamic_grid
+from office_game_app.components.whats_behind.dynamic_grid import dynamic_grid
 
 DEFAULT_NUM_ROWS = 5
 DEFAULT_NUM_COLS = 5
@@ -88,4 +88,4 @@ class GameState(rx.State):
 
 
 def whats_behind():
-    return rx.container(rx.vstack(cell_config_input(GameState), dynamic_grid(GameState)))
+    return rx.container(rx.vstack(cell_config_input(GameState), dynamic_grid(GameState)), size="4")
