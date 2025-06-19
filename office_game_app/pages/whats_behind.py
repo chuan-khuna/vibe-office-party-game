@@ -1,53 +1,74 @@
 import reflex as rx
 from PIL import Image
-
-from office_game_app.components.whats_behind.image_grid import image_grid_component
-from office_game_app.components.whats_behind.cell_config import cell_config_input
 import logging
 import io
 
+from office_game_app.components.whats_behind.cell_config import upload_input, cell_config_input
 
+from office_game_app.components.dynamic_grid import dynamic_grid
+
+DEFAULT_NUM_ROWS = 5
+DEFAULT_NUM_COLS = 5
 place_holder_image_path = 'assets/lucy.png'
-default_num_rows = 3
-default_num_cols = 3
-MAX_SIZE = (1080, 1080)
+MAX_SIZE = (1080, 1080)  # Maximum size for the image thumbnail
 
 
-class CellState(rx.State):
-    num_rows: int = default_num_rows
-    num_cols: int = default_num_cols
-    cells: dict[str, bool] = {
-        f"{row}_{col}": True for row in range(default_num_rows) for col in range(default_num_cols)
+class GameState(rx.State):
+    num_rows: int = DEFAULT_NUM_ROWS
+    num_cols: int = DEFAULT_NUM_COLS
+
+    # hidden state for each cell in the grid
+    game_state: dict[str, bool] = {
+        f"{row}_{col}": True for row in range(DEFAULT_NUM_ROWS) for col in range(DEFAULT_NUM_COLS)
     }
+
     image: Image.Image = Image.open(place_holder_image_path)
 
     @rx.event
     def toggle_hidden(self, row: int, col: int):
-        # toggle the hidden state of a cell
         key = f"{row}_{col}"
-        if key in self.cells:
-            self.cells[key] = not self.cells[key]
+        if key in self.game_state:
+            self.game_state[key] = not self.game_state[key]
+
+    @rx.event
+    def show_all(self):
+        for k, v in self.game_state.items():
+            self.game_state[k] = False
+
+    @rx.event
+    def hide_all(self):
+        for k, v in self.game_state.items():
+            self.game_state[k] = True
 
     @rx.event
     def set_num_rows(self, value: list[int | float]):
         # set the number of rows
         self.num_rows = value[0]
-        self.reset_cell()
+        self.reset_game_state()
 
     @rx.event
     def set_num_cols(self, value: list[int | float]):
         # set the number of columns
         self.num_cols = value[0]
-        self.reset_cell()
+        self.reset_game_state()
 
     @rx.event
-    def reset_cell(self):
+    def reset_game_state(self):
         # reset all cells to hidden
         for row in range(self.num_rows):
             for col in range(self.num_cols):
                 key = f"{row}_{col}"
-                self.cells[key] = True
+                self.game_state[key] = True
                 logging.info(f"Reset cell {key} to hidden.")
+
+    @rx.event
+    def reset_game_to_default(self):
+        # Reset the game state to default values
+        self.num_rows = DEFAULT_NUM_ROWS
+        self.num_cols = DEFAULT_NUM_COLS
+        self.game_state = {f"{row}_{col}": True for row in range(DEFAULT_NUM_ROWS) for col in range(DEFAULT_NUM_COLS)}
+        self.image = Image.open(place_holder_image_path)
+        logging.info("Game state reset to default values.")
 
     @rx.event
     async def handle_upload(self, files: list[rx.UploadFile]):
@@ -57,53 +78,14 @@ class CellState(rx.State):
         self.image = self.image.convert("RGB")  # Ensure the image is in RGB format
         self.image.thumbnail(MAX_SIZE)  # Resize the image to fit within 1080x1080
 
-    @rx.var(cache=True)
-    def image_grid(self) -> list[list[Image.Image]]:
-        image_grid = []
-
-        image = self.image
-
-        cell_width = image.width // self.num_cols
-        cell_height = image.height // self.num_rows
-        for row in range(self.num_rows):
-            row_cells = []
-            for col in range(self.num_cols):
-                left = col * cell_width
-                upper = row * cell_height
-                right = left + cell_width
-                lower = upper + cell_height
-                cell_image = image.crop((left, upper, right, lower))
-                row_cells.append(cell_image)
-            image_grid.append(row_cells)
-        return image_grid
+    @rx.var
+    def image_width(self) -> int:
+        return self.image.width if self.image else 0
 
     @rx.var
-    def cell_width(self) -> int:
-        return self.image.width // self.num_cols if self.image else 0
-
-    @rx.var
-    def cell_height(self) -> int:
-        return self.image.height // self.num_rows if self.image else 0
-
-    @rx.event
-    def reset_game_to_default(self):
-        # Reset the game state to default values
-        self.num_rows = default_num_rows
-        self.num_cols = default_num_cols
-        self.cells = {f"{row}_{col}": True for row in range(default_num_rows) for col in range(default_num_cols)}
-        self.image = Image.open(place_holder_image_path)
-        logging.info("Game state reset to default values.")
-
-    @rx.event
-    def show_all(self):
-        for k, v in self.cells.items():
-            self.cells[k] = False
-
-    @rx.event
-    def hide_all(self):
-        for k, v in self.cells.items():
-            self.cells[k] = True
+    def image_height(self) -> int:
+        return self.image.height if self.image else 0
 
 
-def whats_behind() -> rx.Component:
-    return rx.container(rx.vstack(cell_config_input(CellState), image_grid_component(CellState)))
+def whats_behind():
+    return rx.container(rx.vstack(cell_config_input(GameState), dynamic_grid(GameState)))
